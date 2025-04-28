@@ -21,8 +21,9 @@ setInterval(() => {
 }, 24 * 60 * 60 * 1000); // 24 hours in milliseconds
 
 app.use(morgan("dev")); // Logs HTTP requests to the console for debugging
+app.use(express.static("public")); // Serves static files from the 'public' directory
 
-app.get("/", (req, res) => {
+app.get("/api/movies", (req, res) => {
   const movieId = req.query.i; // Extracts movie ID from URL query (everything after '?i=' in the URL)
   const title = req.query.t; // Extracts movie title from URL query (everything after '?t=' in the URL)
 
@@ -68,5 +69,44 @@ app.get("/", (req, res) => {
       res.status(500).send("Error fetching movie data");
     });
 });
+
+// // Duplicate route at "/" to support testing
+// app.get("/", (req, res) => {
+//   const movieId = req.query.i;
+//   const title = req.query.t;
+
+//   if (movieId && cache[movieId]) {
+//     return res.status(200).json(cache[movieId]);
+//   }
+//   if (title && cache[title.toLowerCase()]) {
+//     return res.status(200).json(cache[title.toLowerCase()]);
+//   }
+
+//   let url = `http://www.omdbapi.com/?apikey=${API_KEY}`;
+//   if (movieId) {
+//     url += `&i=${movieId}`;
+//   } else if (title) {
+//     url += `&t=${encodeURIComponent(title)}`;
+//   } else {
+//     return res.status(400).send("Please provide a movie ID or title.");
+//   }
+
+//   axios
+//     .get(url)
+//     .then((response) => {
+//       const data = response.data;
+//       if (movieId) {
+//         cache[movieId] = data;
+//       } else if (title) {
+//         cache[title.toLowerCase()] = data;
+//       }
+//       res.status(200).json(response.data);
+//     })
+//     .catch((error) => {
+//       console.error("Error fetching movie data:", error);
+//       res.status(500).send("Error fetching movie data");
+//     });
+// });
+
 // ==== EXPORT THE APP MODULE ====
 module.exports = app;
